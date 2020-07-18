@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
-import {firebaseAuth} from '../enviorment/config';
+import firebase from 'react-native-firebase';
 class LoadingScreen extends Component {
   componentDidMount() {
-    firebaseAuth.onAuthStateChanged(user => {
+    firebase.auth().onAuthStateChanged(user => {
       this.props.navigation.navigate(user ? 'Home' : 'signup');
     });
   }

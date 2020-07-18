@@ -7,12 +7,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   KeyboardAvoidingView,
-  ScrollView
+  ScrollView,
+  Dimensions,
 } from 'react-native';
 import Input from '../components/Input';
 //import Food from '../assets/Food.png';
 import Logo from '../components/Logo';
-import {firebaseAuth} from '../enviorment/config';
+import firebase from 'react-native-firebase';
 
 class SignInnScreen extends Component {
   // static navigationOptions = {
@@ -21,13 +22,15 @@ class SignInnScreen extends Component {
   state = {
     email: 'aliraza@gmail.com',
     password: '123456789',
+    //name:'ali',
     errorMessage: null,
     loading: false,
     loggedIn: false,
   };
   handleLogin = () => {
     console.log('handleLogin');
-    firebaseAuth
+    firebase
+      .auth()
       .signInWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
         this.setState({loggedIn: true});
@@ -44,66 +47,92 @@ class SignInnScreen extends Component {
   render() {
     return (
       <ScrollView>
-      <KeyboardAvoidingView style={{flex: 1, justifyContent: 'center'}}>
-        <View style={styles.container}>
-          <Logo />
-          {this.state.errorMessage && (
-            <Text style={{color: 'red'}}>{this.state.errorMessage}</Text>
-          )}
-          <View style={styles.inputView}>
-          <Input
-            placeholder="user@gmail.com"
-            label="mail:"
-            value={this.state.email}
-            onChangeText={email => this.setState({email})}
-          />
-          </View>
-          <View style={styles.input2View}>
-          <Input
-            secureTextEntry
-            label="Password:"
-            placeholder="Password"
-            value={this.state.password}
-            onChangeText={password => this.setState({password})}
-          />
-          </View>
-          <TouchableOpacity onPress={this.handleLogin}>
-            <View style={styles.signupBtn}>
-              <Text style={styles.buttonText}>Login</Text>
-            </View>
-          </TouchableOpacity>
-          <View style={styles.dontView}>
-            <Button
-             color='#7a7aff'
-              title="Don't have an account? Sign Up"
-              onPress={() => this.props.navigation.navigate('signup')}
-              style={styles.signupDont}
+        <KeyboardAvoidingView style={{flex: 1, justifyContent: 'center'}}>
+          <View style={styles.container}>
+            <Logo />
+            {this.state.errorMessage && (
+              <Text style={{color: 'red'}}>{this.state.errorMessage}</Text>
+            )}
+
+            <Input
+              placeholder="user@gmail.com"
+              value={this.state.email}
+              onChangeText={email => this.setState({email})}
             />
+
+            <Input
+              secureTextEntry
+              placeholder="Password"
+              value={this.state.password}
+              onChangeText={password => this.setState({password})}
+            />
+
+            <View style={{width: '80%', alignItems: 'center', flex: 0.8}}>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: '#ffffff',
+                  height: 40,
+                  width: '100%',
+                  marginTop: 10,
+                  borderRadius: 10,
+                  justifyContent: 'center',
+                }}
+                onPress={this.handleLogin}>
+                <Text style={styles.buttonText}>Sign In</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View
+              style={{
+                marginTop: '20%',
+                flex: 0.2,
+                borderTopWidth: 1,
+                borderColor: 'black',
+                width: '100%',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{paddingBottom: '20%', fontSize: SCREEN_WIDTH * 0.05}}>
+                Don't have an account?
+                <Text style={{fontWeight: 'bold', color: 'black'}}>
+                  Sign up
+                </Text>
+              </Text>
+            </View>
+
+            {/*
+            <View style={styles.dontView}>
+              <Button
+                color="#7a7aff"
+                title="Don't have an account? Sign Up"
+                onPress={() => this.props.navigation.navigate('signup')}
+                style={styles.signupDont}
+              />
+            </View>*/}
           </View>
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
       </ScrollView>
     );
   }
 }
-SignInnScreen.navigationOptions = (navData) =>{
-  return{
-    headerTitle:'Sign In',
-    headerTintColor:'white',
-   
-    headerStyle:{
-      backgroundColor:'#7a7aff',
+SignInnScreen.navigationOptions = navData => {
+  return {
+    headerTitle: 'Sign In',
+    headerTintColor: '#7a7aff',
+    headerStyle: {
+      backgroundColor: '#ffffff',
       //fontWeight:'bold'
-    }
-  }
-}
+    },
+  };
+};
 const styles = StyleSheet.create({
-  inputView:{
+  inputView: {
     //marginLeft:5
-    marginTop:-50
+    marginTop: -50,
   },
-  input2View:{
-    marginTop:-120
+  input2View: {
+    marginTop: -120,
   },
   errorMessage: {
     textAlign: 'center',
@@ -113,8 +142,12 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#7a7aff',
     flex: 1,
+    //height:300,
     alignItems: 'center',
     justifyContent: 'center',
+    // height: '100%',
+
+    width: '100%',
   },
   signupText: {
     flexGrow: 1,
@@ -126,26 +159,30 @@ const styles = StyleSheet.create({
   signupDont: {
     fontSize: 50,
     //marginVertical: 50,
-    color:'#7a7aff'
+    color: '#7a7aff',
   },
   signupBtn: {
-    borderRadius: 1,
     marginBottom: 5,
-    backgroundColor: 'white',
+    backgroundColor: '#7a7aff',
     borderWidth: 1,
-    borderColor: 'blue',
+    borderRadius: 5,
+    //borderColor: 'blue',
     width: 100,
     height: 35,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: -30,
-   //marginVertical: 10,
+    //marginVertical: 10,
   },
   buttonText: {
     color: '#7a7aff',
     textAlign: 'center',
-    fontWeight:'bold'
+    fontWeight: 'bold',
+    alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: 20,
   },
   error: {
     color: '#E9446A',
@@ -158,4 +195,5 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
 });
+const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 export default SignInnScreen;

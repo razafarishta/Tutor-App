@@ -18,25 +18,42 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import HelpScreen from './screens/HelpScreen';
 import NotificationScreen from './screens/NotificationScreen';
-//import ChatScreen from './screens/ChatScreen';
+import StudentScreen from './screens/StudentScreen';
+import StudentDetailScreen from './screens/StudentDetailScreen';
+import TutorDetail from './screens/TutorDetail';
+import MapScreen from './screens/MapScreen';
+import ChatScreen from './screens/ChatScreen';
 const AppStack = createStackNavigator(
   {
     Loading: {screen: LoadingScreen},
     SignIn: {screen: SignInnScreen},
     signup: {screen: SignupScreen},
+    TutorDe: {screen: TutorDetail},
     Home: {
       screen: HomeScreen,
-      navigationOption: {headerStyle: {backgroundColor: 'black'}},
     },
     Tutor: {
       screen: TutorScreen,
-      navigationOption: {headerStyle: {backgroundColor: 'black'}},
+    },
+    Student:{
+    screen: StudentScreen,
+    },
+    StudentDetail:{
+      screen:StudentDetailScreen
     },
     Final: {screen: FinalScreen},
-
+    Maps: {
+      screen: MapScreen,
+      navigationOptions:{
+        headerStyle:{
+          backgroundColor:'#7a7aff',
+          activeTintColor:'#FFFFFF'
+        }
+      }
+    },
     Help:{
       screen: HelpScreen,
-      navigationOption:{headerStyle:{
+      navigationOptions:{headerStyle:{
         backgroundColor:'#7a7aff'
       }}
     },
@@ -59,21 +76,28 @@ const AppStack = createStackNavigator(
       }
     },
 
-  //  Chat:{
-    //  screen:ChatScreen,
-      //navigationOption:{
-        //headerStyle:{
-          //backgroundColor:'#7a7aff'
-        //}
-     // }
-    //},
+    Chat:{
+      screen:ChatScreen,
+      navigationOption:{
+        headerStyle:{
+          backgroundColor:'#7a7aff'
+        }
+      }
+    },
 
   },
  
   {
-    initialRouteName: 'Home',
+    initialRouteName: 'signup',
   },
-);
+  {
+    headerLayoutPreset:"center"
+  }
+)
+
+
+
+
 const SettingNavigator=createStackNavigator({
   setting:SettingScreen
 },
@@ -132,6 +156,11 @@ const drawer = createDrawerNavigator({
 
 const BottomNavigator = createBottomTabNavigator({
   dra:drawer,
+  Home:{screen:HomeScreen, navigationOptions:{
+    tabBarIcon: (tabInfo)=>{
+      return <Ionicons name="md-home" size={25} color='#7a7aff'/>
+    }
+  }},
   app:{screen:AppStack, navigationOptions:{
     tabBarIcon: (tabInfo)=>{
       return <Ionicons name='ios-notifications' size={25} color='#7a7aff'/>

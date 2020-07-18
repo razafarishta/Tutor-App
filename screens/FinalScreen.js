@@ -1,11 +1,12 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
-import {View, Text, TouchableOpacity, FlatList} from 'react-native';
+import {View, Text, TouchableOpacity, FlatList, Alert} from 'react-native';
 import {SearchBar} from 'react-native-elements';
-import {firebaseAuth} from '../enviorment/config';
-import * as firebase from 'firebase';
+import firebase from 'react-native-firebase';
 //import FinalDetailScreen from '../screens/FinalDetailScreen'
 import IconIcon from 'react-native-vector-icons/Ionicons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 var arrayholder = [];
 var data_array = [];
 class FinalScreen extends Component {
@@ -16,7 +17,7 @@ class FinalScreen extends Component {
       data: [],
       loading: true,
       //data_array: [],
-      searchValue: '',
+      //searchValue: '',
     };
   }
   componentDidMount() {
@@ -26,15 +27,13 @@ class FinalScreen extends Component {
   takeData() {
     // var data_array = [];
 
-    var uid = firebaseAuth.currentUser.uid;
+    var uid = firebase.auth().currentUser.uid;
     var db = firebase
       .database()
-      .ref('tutors/')
+      .ref(`tutors/`)
       .on('value', snapshot => {
         snapshot.forEach(data => {
-         
-            data_array.push(data.val());
-          
+          data_array.push(data.val());
 
           console.log('data', data_array);
         });
@@ -44,37 +43,35 @@ class FinalScreen extends Component {
         this.arrayholder = data_array;
         data_array = [];
       });
-    }
+  }
 
-      onPressButton = () => {
-        firebaseAuth
-          .signOut()
-          .then(() => this.props.navigation.navigate('SignIn'))
-          .catch(error => this.setState({errorMessage: error.message}))
-      }
-  
-  onCardPressed(item){
-    this.props.navigation.push('FinalDetail', {itemData:item})
-    console.log(item)
+  onPressButton = () => {
+    firebaseAuth.signOut().then(() => this.props.navigation.navigate('SignIn'));
+  };
+
+  onCardPressed(item) {
+    this.props.navigation.push('FinalDetail', {itemData: item});
+    console.log(item);
   }
   //onPressButton = () => {
   //firebaseAuth.signOut().then(() => this.props.navigation.navigate('SignIn'));
   //};
-  /*renderHeader = () => {
+  renderHeader = () => {
     return (
       <SearchBar
-        placeholder="Search your course"
+        placeholder="Search your Tutor"
         lightTheme
-        placeholderTextColor="#15b50c"
+        placeholderTextColor="#7a7aff"
         //                  inputStyle={{backgroundColor:'#FFFFFF'}}
         //                    buttonStyle={{backgroundColor:'#FFFFFF'}}
         //               leftIconContainerStyle={{color:'#FFFFFF'}}
-        searchIcon={{color: '#15b50c'}}
+        searchIcon={{color: '#7a7aff'}}
         inputContainerStyle={{backgroundColor: 'white'}}
         containerStyle={{
           backgroundColor: '#FFFFFF',
-          borderWidth: 0,
-          borderRadius: 0,
+          borderWidth: 1,
+          borderRadius: 2,
+          height: 70,
         }}
         style={{backgroundColor: 'white'}}
         round
@@ -98,22 +95,25 @@ class FinalScreen extends Component {
     });
 
     this.setState({data: newData});
-  };*/
+  };
 
   render() {
     return (
       <View style={{flex: 1}}>
         <View style={{width: '100%'}}>
-          {/*<View style>{this.renderHeader}</View>*/}
+          <View style>{this.renderHeader}</View>
 
           <FlatList
             style={{margin: 10}}
             data={this.state.data}
             extraData={this.state}
-            //ListHeaderComponent={this.renderHeader}
+            ListHeaderComponent={this.renderHeader}
             renderItem={({item, index}) => {
               return (
-                <TouchableOpacity onPress={()=>{this.onCardPressed(item)}}>
+                <TouchableOpacity
+                  onPress={() => {
+                    this.onCardPressed(item);
+                  }}>
                   <View
                     style={{
                       borderBottomWidth: 5,
@@ -172,11 +172,46 @@ class FinalScreen extends Component {
             }}
           />
         </View>
-        <TouchableOpacity style={{marginTop: 32}} onPress={this.onPressButton}>
-          <Text>Logout</Text>
-        </TouchableOpacity>
       </View>
     );
   }
 }
+FinalScreen.navigationOptions = navData => {
+  return {
+    headerTitle: 'TUTOR',
+    headerTintColor: 'white',
+    headerRight: (
+      <TouchableOpacity
+        onPress={() =>
+          Alert.alert('Logout Alert', 'Do you really want to Logout...', [
+            {
+              text: 'NO',
+              onPress: () => console.warn('NO Pressed'),
+              style: 'cancel',
+            },
+            {
+              text: 'YES',
+              onPress: () =>
+                firebase
+                  .auth()
+                  .signOut()
+                  .then(() => {
+                    navData.navigation.navigate('SignIn');
+                  }),
+            },
+          ])
+        }>
+        <AntDesign
+          name="logout"
+          style={{color: '#FFFFFF', marginRight: 10}}
+          size={25}
+          onPress={this.onPressButton}
+        />
+      </TouchableOpacity>
+    ),
+    headerStyle: {
+      backgroundColor: '#7a7aff',
+    },
+  };
+};
 export default FinalScreen;

@@ -6,12 +6,11 @@ import {
   TextInput,
   Button,
   StyleSheet,
-  ScrollView
+  ScrollView,
 } from 'react-native';
-import * as firebase from 'firebase';
 import Input from '../components/Input';
-import {firebaseAuth} from '../enviorment/config';
-import Feather from 'react-native-vector-icons/Feather';
+import firebase from 'react-native-firebase';
+import Geolocation from '@react-native-community/geolocation';
 console.disableYellowBox = true;
 const data_array = [];
 class TutorScreen extends Component {
@@ -23,12 +22,25 @@ class TutorScreen extends Component {
       city: '',
       uid: '',
       address: '',
+      longitude: 0,
+      latitude: 0,
       data: [],
     };
   }
 
+  componentDidMount() {
+    Geolocation.getCurrentPosition(info => {
+      this.setState(
+        {latitude: info.coords.latitude, longitude: info.coords.longitude},
+        () => {
+          this.setState({loading: false});
+        },
+      );
+    });
+  }
+
   handleTutor() {
-    const {currentUser} = firebaseAuth;
+    const {currentUser} = firebase.auth();
     firebase
       .database()
       .ref(`tutors/${currentUser.uid}/tutor_info`)
@@ -37,9 +49,11 @@ class TutorScreen extends Component {
         phone: this.state.phone,
         city: this.state.city,
         address: this.state.address,
+        longitude: this.state.longitude,
+        latitude: this.state.latitude,
       })
       .then(data => {
-        this.props.navigation.navigate('Final');
+        this.props.navigation.navigate('TutorDe');
       })
       .catch(error => console.log(error));
   }
@@ -47,66 +61,94 @@ class TutorScreen extends Component {
   render() {
     return (
       <ScrollView>
-      <View style={styles.container}>
-        <View style={{}}>
-          <Text style={{textAlign: 'center', marginBottom: 20, backgroundColor:'red', fontSize:20}}>
-            Tutor Details
-          </Text>
-        </View>
-        <View style={{bottom: 20}}>
-          <View style={{marginBottom:-100}}>
-          <Input
-            placeholder="Name"
-            label="Name"
-            onChangeText={name => this.setState({name})}
-            value={this.state.name}
-          />
-          </View>
-          <View style={{marginBottom:-100}}>
-          <Input
-            placeholder="Phone No"
-            label="Phone No:"
-            onChangeText={phone => this.setState({phone})}
-            value={this.state.phone}
-          />
+        <View style={styles.container}>
+          <View style={{marginBottom: 90}}>
+            <View style={{}}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  marginBottom: 20,
+                  //backgroundColor: 'red',
+                  fontSize: 30,
+                }}>
+                Info:
+              </Text>
             </View>
-            <View style={{marginBottom:-80}}>
-          <Input
-            placeholder="City"
-            label="City"
-            onChangeText={city => this.setState({city})}
-            value={this.state.city}
-          />
+
+            <Input
+              placeholder="Name"
+              onChangeText={name => this.setState({name})}
+              value={this.state.name}
+            />
+
+            <Input
+              placeholder="Phone No"
+              onChangeText={phone => this.setState({phone})}
+              value={this.state.phone}
+            />
+
+            <Input
+              placeholder="City"
+              onChangeText={city => this.setState({city})}
+              value={this.state.city}
+            />
+
+            <Input
+              placeholder="Address"
+              onChangeText={address => this.setState({address})}
+              value={this.state.address}
+            />
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#ffffff',
+                height: 30,
+                width: 80,
+                borderRadius: 10,
+                justifyContent: 'center',
+                alignContent: 'center',
+                alignItems: 'center',
+                marginLeft: 110,
+                marginTop: 20,
+              }}
+              onPress={this.handleTutor.bind(this)}>
+              <Text
+                style={{
+                  color: '#7a7aff',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  alignContent: 'center',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  fontSize: 20,
+                }}>
+                Submit
+              </Text>
+            </TouchableOpacity>
           </View>
-          <View style={{marginBottom:-40}}>
-          <Input
-            placeholder="Address"
-            label="Address"
-            onChangeText={address => this.setState({address})}
-            value={this.state.address}
-          />
-          </View>
+          {/*<View style={{}}>
+            <Button
+              title="submit"
+              style={styles.btn}
+              onPress={this.handleTutor.bind(this)}
+            />
+            </View>}*/}
         </View>
-        <View style={{bottom: 15}}>
-          <Button
-            title="submit"
-            style={styles.btn}
-            onPress={this.handleTutor.bind(this)}
-          />
-        </View>
-      </View>
       </ScrollView>
     );
   }
 }
 
 TutorScreen.navigationOptions = {
-  headerTitle: 'Tutor Details',
+  headerTitle: 'Detail of Tutor',
 };
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#7a7aff',
     flex: 1,
+    width: '100%',
+    height: 700,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   btn: {

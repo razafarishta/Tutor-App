@@ -10,8 +10,8 @@ import {
   ScrollView,
 } from 'react-native';
 import Input from '../components/Input';
-import {firebaseAuth} from '../enviorment/config';
-import * as firebase from 'firebase';
+import firebase from 'react-native-firebase';
+
 import Feather from 'react-native-vector-icons/Feather';
 class SignupScreen extends Component {
   state = {
@@ -23,12 +23,14 @@ class SignupScreen extends Component {
   };
   handleSignUp = () => {
     console.log('handleSignUp');
-    firebaseAuth
+    firebase
+      .auth()
       .createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(user => {
         if (firebaseAuth.currentUser) {
           var userId = firebaseAuth.currentUser.uid;
-          console.log(userId);
+          console.log('userId', userId);
+
           if (userId) {
             firebase
               .database()
@@ -50,19 +52,19 @@ class SignupScreen extends Component {
       <ScrollView>
         <KeyboardAvoidingView style={{flex: 1, justifyContent: 'center'}}>
           <View style={styles.container}>
-           {/* <Text style={{fontSize: 30, top: 40}}>Sign Up</Text>*/}
+            <Text style={{fontSize: 25, fontWeight: 'bold'}}>Sign up</Text>
+            {/* <Text style={{fontSize: 30, top: 40}}>Sign Up</Text>*/}
             {this.state.errorMessage && (
               <Text style={{color: 'red'}}>{this.state.errorMessage}</Text>
             )}
-            <View style={styles.inputView}>
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
               <Input
                 placeholder="User Name"
                 label="NAME:"
                 onChangeText={name => this.setState({name})}
                 value={this.state.name}
               />
-            </View>
-            <View style={styles.input2View}>
+
               <Input
                 // name={'user-circle'}
                 placeholder="Email"
@@ -70,8 +72,7 @@ class SignupScreen extends Component {
                 onChangeText={email => this.setState({email})}
                 value={this.state.email}
               />
-            </View>
-            <View style={styles.input3View}>
+
               <Input
                 // name={'envelope-open'}
                 secureTextEntry
@@ -81,7 +82,6 @@ class SignupScreen extends Component {
                 value={this.state.password}
               />
             </View>
-
             <View style={styles.buttonsView}>
               <TouchableOpacity onPress={this.handleSignUp}>
                 <View style={styles.signupBtn}>
@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    height: 600,
   },
   inputView: {
     // marginHorizontal: 0,
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
 
     //marginBottom: 5,
     marginTop: -25,
-    marginBottom:-10,
+    marginBottom: -10,
     flexDirection: 'row',
     alignItems: 'center',
     //bottom: 30,
@@ -141,12 +142,12 @@ const styles = StyleSheet.create({
     flex: 1,
 
     //marginBottom: 5,
-   // marginTop: 15,
+    // marginTop: 15,
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: -85,
-    marginVertical:10
-   // bottom: 30,
+    marginVertical: 10,
+    // bottom: 30,
   },
 
   input3View: {
